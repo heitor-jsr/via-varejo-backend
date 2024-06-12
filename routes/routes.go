@@ -28,6 +28,6 @@ func Routers() http.Handler {
 
 	mux.Post("/purchase", app.CreateNewPurchaseSummary)
 
-	mux.Get("/purchase/{id}", app.GetRedisPurchaseSummary)
+	mux.Get("/purchase/retrivedPurchaseSummary", app.GetRedisPurchaseSummary)
 	return mux
 }

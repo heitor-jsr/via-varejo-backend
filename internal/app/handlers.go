@@ -2,11 +2,11 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"via-varejo/helpers"
 	"via-varejo/internal/domain"
 
-	"github.com/go-chi/chi"
 	"github.com/gofrs/uuid"
 )
 
@@ -85,7 +85,8 @@ func createPurchaseSummaryResponse(newPurchaseSummary domain.PurchaseSummary, to
 }
 
 func GetRedisPurchaseSummary(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id := r.URL.Query().Get("id")
+	fmt.Println(id)
 
 	purchaseSummary, err := domain.FindByIDRedisPurchaseSumary(id)
 	if err != nil {
