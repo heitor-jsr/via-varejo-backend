@@ -25,10 +25,9 @@ func Routers() http.Handler {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 	mux.Use(middleware.Logger)
-	mux.Get("/test", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Test route is working"))
-	})
 
 	mux.Post("/purchase", app.CreateNewPurchaseSummary)
+
+	mux.Get("/purchase/{id}", app.GetRedisPurchaseSummary)
 	return mux
 }
