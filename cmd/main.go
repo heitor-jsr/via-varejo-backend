@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,16 +13,11 @@ import (
 const port = "8080"
 
 func main() {
-	pool, err := domain.ConnectToDB()
+	err := domain.InitDB()
 	if err != nil {
-		log.Fatalf("Não foi possível conectar ao banco de dados: %v\n", err)
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
-	defer pool.Close()
-
-	err = pool.Ping(context.Background())
-	if err != nil {
-		log.Fatalf("Falha ao pingar o banco de dados: %v\n", err)
-	}
+	defer domain.GetDB().Close()
 
 	domain.InitRedisClient("redis:6379", "", 0)
 

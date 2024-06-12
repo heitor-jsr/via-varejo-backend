@@ -1,17 +1,30 @@
+// domain/db.go
+
 package domain
 
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
-	_ "github.com/jackc/pgx"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func ConfigPGX() *pgxpool.Config {
+var db *pgxpool.Pool
+
+const dbTimeout = time.Second * 3
+
+func InitDB() error {
+	var err error
+	db, err = ConnectToDB()
+	if err != nil {
+		return fmt.Errorf("failed to connect to database: %v", err)
+	}
+	return nil
+}
+
+func ConnectToDB() (*pgxpool.Pool, error) {
 	const defaultMaxConns = int32(5)
 	const defaultMinConns = int32(0)
 	const defaultMaxConnLifetime = time.Hour
@@ -23,9 +36,10 @@ func ConfigPGX() *pgxpool.Config {
 	if DATABASE_URL == "" {
 		DATABASE_URL = "postgres://via_varejo_user:123456@postgres:5432/via_varejo"
 	}
+
 	dbConfig, err := pgxpool.ParseConfig(DATABASE_URL)
 	if err != nil {
-		log.Fatal("Failed to create a config, error: ", err)
+		return nil, fmt.Errorf("failed to create a config: %v", err)
 	}
 
 	dbConfig.MaxConns = defaultMaxConns
@@ -35,26 +49,14 @@ func ConfigPGX() *pgxpool.Config {
 	dbConfig.HealthCheckPeriod = defaultHealthCheckPeriod
 	dbConfig.ConnConfig.ConnectTimeout = defaultConnectTimeout
 
-	return dbConfig
-}
-
-func ConnectToDB() (*pgxpool.Pool, error) {
-	var pool *pgxpool.Pool
-	var err error
-
-	for i := 0; i < 10; i++ {
-		log.Printf("Connecting to Postgres, attempt %d\n", i+1)
-
-		pool, err = pgxpool.ConnectConfig(context.Background(), ConfigPGX())
-		if err != nil {
-			log.Printf("Failed to connect to Postgres: %v\n", err)
-			time.Sleep(2 * time.Second)
-			continue
-		}
-
-		log.Println("Connected to Postgres")
-		return pool, nil
+	pool, err := pgxpool.ConnectConfig(context.Background(), dbConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}
 
-	return nil, fmt.Errorf("failed to connect to Postgres after 10 attempts")
+	return pool, nil
+}
+
+func GetDB() *pgxpool.Pool {
+	return db
 }
