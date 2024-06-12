@@ -27,7 +27,7 @@ func Routers() http.Handler {
 	mux.Use(middleware.Logger)
 
 	mux.Post("/purchase", app.CreateNewPurchaseSummary)
-
+	mux.Post("/purchase/retrivedPurchaseSummary/{id}/confirm", app.CreateConfirmNewPurchase)
 	mux.Get("/purchase/retrivedPurchaseSummary", app.GetRedisPurchaseSummary)
 	return mux
 }

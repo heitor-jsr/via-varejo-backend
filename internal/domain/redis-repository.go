@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -32,10 +31,7 @@ func InsertRedisPurchaseSummary(key string, value PurchaseSummary) error {
 }
 
 func FindByIDRedisPurchaseSumary(id string) (PurchaseSummary, error) {
-	fmt.Println(reflect.TypeOf(id))
-	fmt.Println(id)
 	value, err := C.Get(context.Background(), id).Result()
-	fmt.Println(value)
 
 	if err == redis.Nil {
 		return PurchaseSummary{}, fmt.Errorf("value not found: %v", err)
