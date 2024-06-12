@@ -1,6 +1,10 @@
 package domain
 
-import "github.com/gofrs/uuid"
+import (
+	"time"
+
+	"github.com/gofrs/uuid"
+)
 
 type Product struct {
 	Name        string  `json:"name"`
@@ -24,4 +28,11 @@ type PurchaseSummaryResponse struct {
 	TotalAmount  float64 `json:"totalAmount"`
 	InterestRate float64 `json:"InterestRate"`
 	Installments int     `json:"installments"`
+}
+
+type Purchase struct {
+	ID           uuid.UUID     `json:"id"`
+	ProductInfo  Product       `json:"productInfo"`
+	PaymentInfo  PaymentMethod `json:"paymentInfo"`
+	PurchaseDate time.Time     `json:"purchaseDate"`
 }

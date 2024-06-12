@@ -7,16 +7,16 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-var c *redis.Client
+var C *redis.Client
 
 func InitRedisClient(addr, password string, db int) {
-	c = redis.NewClient(&redis.Options{
+	C = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       db,
 	})
 
-	_, err := c.Ping(context.Background()).Result()
+	_, err := C.Ping(context.Background()).Result()
 	if err != nil {
 		log.Fatalf("Falha ao pingar o servidor Redis: %v\n", err)
 	}

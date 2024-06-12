@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/gofrs/uuid"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -15,7 +14,7 @@ func InsertRedisPurchaseSummary(key string, value PurchaseSummary) error {
 		return fmt.Errorf("failed to marshal value: %v", err)
 	}
 
-	txn := c.TxPipeline()
+	txn := C.TxPipeline()
 
 	err = txn.SetNX(context.Background(), key, data, 0).Err()
 	if err != nil {
@@ -31,9 +30,9 @@ func InsertRedisPurchaseSummary(key string, value PurchaseSummary) error {
 	return err
 }
 
-func FindByIDRedisPurchaseSumary(client *redis.Client, id uuid.UUID) (PurchaseSummary, error) {
+func FindByIDRedisPurchaseSumary(id string) (PurchaseSummary, error) {
 
-	value, err := client.Get(context.Background(), id.String()).Result()
+	value, err := C.Get(context.Background(), id).Result()
 	if err == redis.Nil {
 		return PurchaseSummary{}, fmt.Errorf("value not found: %v", err)
 	} else if err != nil {
